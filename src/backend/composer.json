@@ -1,0 +1,16 @@
+{
+    "name": "wollbro/blogportal",
+    "description": "A blog portal just for fun",
+    "autoload": {
+        "psr-4": {
+            "Wollbro\\Blogportal\\": "api/",
+            "Wollbro\\Blogportal\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniel Wollbro"
+        }
+    ],
+    "require": {}
+}

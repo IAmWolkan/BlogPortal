@@ -1,0 +1,75 @@
+version: "3.7"
+
+services:
+  frontend:
+    image: nginx:1.23.1-alpine
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - './src/frontend:/app'
+      - './conf/nginx:/etc/nginx/conf.d/:ro'
+    networks:
+      - blogPortal
+    
+  backend:
+    build: docker/php-fpm
+    working_dir: /api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - 9000
+    volumes:
+      - './src/backend:/api'
+    networks:
+      - blogPortal
+
+  db:
+    image: mysql:8.0.30
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blogportal
+      MYSQL_USER: blogportal
+      MYSQL_PASSWORD: blogportal123!#
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost"]
+      timeout: 1s
+      retries: 10
+    expose:
+      - 3306
+    networks:
+      - blogPortal
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8080:80
+    networks:
+      - blogPortal
+
+  tools:
+    build: docker/tools
+    restart: unless-stopped
+    volumes:
+      - './src/frontend:/app/frontend'
+      - './src/backend:/app/backend'
+    networks:
+      - blogPortal
+
+volumes:
+  mysql:
+
+networks:
+  blogPortal:
+    driver: bridge
