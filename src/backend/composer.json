@@ -3,8 +3,8 @@
     "description": "A blog portal just for fun",
     "autoload": {
         "psr-4": {
-            "Wollbro\\Blogportal\\": "api/",
-            "Wollbro\\Blogportal\\Tests\\": "tests/"
+            "BlogPortal\\Api\\": "api/",
+            "BlogPortal\\Api\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -14,7 +14,9 @@
     ],
     "require": {
         "rdlowrey/auryn": "^1.4",
-        "symfony/http-foundation": "^6.0"
+        "symfony/http-foundation": "^6.0",
+        "monolog/monolog": "^2.8",
+        "consolidation/robo": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
