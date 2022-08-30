@@ -11,7 +11,7 @@ use Monolog\Handler\ErrorLogHandler;
  * @codeCoverageIgnore
  */
 class System {
-  public static function setup(Injector $injector) {
+  public static function setup(Injector $injector): void {
     // Setup and configure log for later use
     $injector->delegate(Logger::class, function() {
       $log = new Logger('api');

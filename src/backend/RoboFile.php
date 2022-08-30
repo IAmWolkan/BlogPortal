@@ -16,4 +16,8 @@ class RoboFile extends \Robo\Tasks {
   public function testIntegration() {
     $this->taskExec('vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/Integration')->run();
   }
+
+  public function testCode(string $args = '') {
+    $this->taskExec("vendor/bin/psalm $args")->run();
+  }
 }
