@@ -50,6 +50,8 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     restart: unless-stopped
+    environment:
+      PMA_ARBITRARY: 1
     depends_on:
       db:
         condition: service_healthy
