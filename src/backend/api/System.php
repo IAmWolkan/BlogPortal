@@ -25,8 +25,15 @@ class System {
       return $injector;
     });
 
+    Configuration::preload();
+
     // Setup injector to share the logger between classes
     $injector->share(Logger::class);
+
+    // Shares injector between classes
     $injector->share(Injector::class);
+
+    // Share configuration class between class to make sure we only load it once
+    $injector->share(Configuration::class);
   }
 }
