@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BlogPortal\Api\Tasks\Database;
 
 use Auryn\Injector;
-use BlogPortal\Api\Database\Sql;
+use BlogPortal\Api\Database\{Sql, SqlRaw};
 use BlogPortal\Api\System;
 use BlogPortal\Api\Tasks\BaseTask;
 use Robo\Result;
@@ -43,8 +43,8 @@ class RebuildDb extends BaseTask {
 
         // Connects and execute the query to the database
         $this->sql->connect();
-        $stmt = $this->sql->prepare($migrationContent);
-        $this->sql->execute($stmt);
+        $sqlRaw = SqlRaw::create($migrationContent);
+        $this->sql->execute($sqlRaw);
 
         $migrationId = $this->extractMigrationIdFromFilePath($filePath);
       }
@@ -73,11 +73,11 @@ class RebuildDb extends BaseTask {
    */
   private function updateMigrationId(int $migrationId) {
     $this->sql->connect();
-    $stmt = $this->sql->prepare('TRUNCATE `migrations`;');
-    $this->sql->execute($stmt);
+    $sqlRaw = SqlRaw::create('TRUNCATE `migrations`;');
+    $this->sql->execute($sqlRaw);
 
-    $stmt = $this->sql->prepare("INSERT INTO `migrations` VALUES ($migrationId);");
-    $this->sql->execute($stmt);
+    $sqlRaw = SqlRaw::create("INSERT INTO `migrations` VALUES ($migrationId);");
+    $this->sql->execute($sqlRaw);
   }
 
   /**

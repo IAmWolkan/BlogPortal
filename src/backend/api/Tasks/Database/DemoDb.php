@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BlogPortal\Api\Tasks\Database;
 
 use Auryn\Injector;
-use BlogPortal\Api\Database\Sql;
+use BlogPortal\Api\Database\{Sql, SqlRaw};
 use BlogPortal\Api\System;
 use BlogPortal\Api\Tasks\BaseTask;
 use Robo\Result;
@@ -38,8 +38,8 @@ class DemoDb extends BaseTask {
       $this->printTaskInfo(":: {$this->demoFilePath}");
 
       $this->sql->connect();
-      $stmt = $this->sql->prepare($fileContent);
-      $this->sql->execute($stmt);
+      $sqlRaw = SqlRaw::create($fileContent);
+      $this->sql->execute($sqlRaw);
     } catch(\Exception $ex) {
       $this->logger->error($ex->getMessage(), $ex->getTrace());
       return Result::error($this, $ex->getMessage(), $ex->getTrace());

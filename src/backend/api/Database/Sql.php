@@ -68,29 +68,14 @@ class Sql {
   }
 
   /**
-   * Prepare query to be executed
-   *
-   * @param string $query
-   * @return void
-   */
-  public function prepare(string $query): \PDOStatement {
-    if(empty(trim($query)))
-      throw new \Exception('Empty sql query is not allowed');
-
-    if(self::$inDebug)
-        $this->logger->debug(":: Prepare SQL query\n$query");
-
-    return $this->connection->prepare($query);
-  }
-
-  /**
    * This is to fetch data from a SELECT query PDO statement
    *
-   * @param \PDOStatement $stmt
+   * @param SqlRaw $sqlRaw
    * @return array
    */
-  public function fetch(\PDOStatement $stmt): array {
+  public function fetch(SqlRaw $sqlRaw): array {
     try {
+      $stmt = $this->_prepare($sqlRaw);
       return $stmt->fetch();
     } finally {
       if(self::$inDebug)
@@ -104,11 +89,13 @@ class Sql {
    * Executes INSERTS, UPDATES or DELETES,
    * INSERTS returnes id of the inserted row.
    *
-   * @param \PDOStatement $stmt
+   * @param SqlRaw $sqlRaw
    * @return integer|null
    */
-  public function execute(\PDOStatement $stmt): ?int {
+  public function execute(SqlRaw $sqlRaw): ?int {
     try {
+      $stmt = $this->_prepare($sqlRaw);
+
       $isInsert = false;
       if(str_starts_with($stmt->queryString, 'insert into'))
         $isInsert = true;
@@ -116,7 +103,7 @@ class Sql {
       if(self::$inDebug)
         $this->logger->debug(":: Execute SQL query\n{$stmt->queryString}");
 
-      $stmt->execute();
+      $stmt->execute($sqlRaw->getParams());
       if($isInsert){
         $lastInsertId = $this->connection->lastInsertId();
         return $lastInsertId === false ? null : intval($lastInsertId);
@@ -138,5 +125,21 @@ class Sql {
    */
   public static function enableDebug() {
     self::$inDebug = true;
+  }
+
+  /**
+   * Prepare query to be executed
+   *
+   * @param string $query
+   * @return \PDOStatement
+   */
+  private function _prepare(SqlRaw $sqlRaw): \PDOStatement {
+    if(empty(trim($sqlRaw->getQuery())))
+      throw new \Exception('Empty sql query is not allowed');
+
+    if(self::$inDebug)
+      $this->logger->debug(":: Prepare SQL query\n{$sqlRaw->getQuery()}");
+
+    return $this->connection->prepare($sqlRaw->getQuery());
   }
 }
