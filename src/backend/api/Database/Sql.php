@@ -68,15 +68,16 @@ class Sql {
   }
 
   /**
-   * This is to fetch data from a SELECT query PDO statement
+   * This is to fetch all data from a SELECT query PDO statement
    *
    * @param SqlRaw $sqlRaw
    * @return array
    */
-  public function fetch(SqlRaw $sqlRaw): array {
+  public function fetchAll(SqlRaw $sqlRaw): array {
     try {
       $stmt = $this->_prepare($sqlRaw);
-      return $stmt->fetch();
+      $stmt->execute($sqlRaw->getParams());
+      return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     } finally {
       if(self::$inDebug)
         $this->logger->debug(":: Closing connection");
@@ -134,6 +135,9 @@ class Sql {
    * @return \PDOStatement
    */
   private function _prepare(SqlRaw $sqlRaw): \PDOStatement {
+    if($this->connection === null)
+        $this->connect();
+
     if(empty(trim($sqlRaw->getQuery())))
       throw new \Exception('Empty sql query is not allowed');
 
