@@ -34,6 +34,21 @@ class RequestService {
   }
 
   /**
+   * Returns the entity id from the id
+   *
+   * @param Request $request
+   * @return integer|null
+   */
+  public function getEntityIdFromUri(Request $request): ?int {
+    $paths = $this->splitApiUrl($request);
+    if(!isset($paths[2]))
+      return null;
+
+    $entityId = intval($paths[2]);
+    return $entityId;
+  }
+
+  /**
    * Splits up the URI to multiple parts
    *
    * @param Request $request
